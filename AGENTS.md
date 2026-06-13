@@ -3,9 +3,11 @@
 ## Rules
 - Никогда не удаляй .env
 - Перед коммитом — npm run lint
+- Не запускай gradle-команды без явной команды
 
 ## Restrictions
-- do not build .apk and .exe without explicit command
+- don't build .apk and .exe without explicit command
+- don't commit and don't push without explicit command
 - don't touch directory refs/
 
 ## Stack

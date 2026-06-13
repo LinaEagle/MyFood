@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     kotlin("plugin.compose")
+    kotlin("plugin.serialization")
     id("com.android.application")
 }
 
@@ -34,21 +35,24 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
         }
 
         androidMain.dependencies {
             implementation(compose.preview)
             implementation("androidx.activity:activity-compose:1.9.3")
+            implementation("androidx.glance:glance:1.1.0")
+            implementation("androidx.glance:glance-appwidget:1.1.0")
         }
     }
 }
 
 android {
-    namespace = "com.foodphotoshoot.app"
+    namespace = "com.mymeals.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.foodphotoshoot.app"
+        applicationId = "com.mymeals.app"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

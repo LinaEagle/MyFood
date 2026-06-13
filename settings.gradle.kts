@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "food-photoshoot"
+rootProject.name = "MyMeals"
 include(":composeApp")
