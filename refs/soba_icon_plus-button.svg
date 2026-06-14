@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#00000022"/>
+    </filter>
+  </defs>
+
+  <!-- White rounded button background (Google-style) -->
+  <rect x="16" y="16" width="480" height="480" rx="112" ry="112"
+        fill="white" stroke="#e0e0e0" stroke-width="1.5" filter="url(#shadow)"/>
+
+  <!-- Soba icon, black, centered and scaled to ~300px -->
+  <g transform="translate(106, 96) scale(6.25)">
+    <path fill="#1a1a1a" d="
+      M11.25 44
+      Q9.3 44 7.75 42.8
+      T5.75 39.7
+      L4 32.6
+      H7.3
+      Q7.4 31.9 7.58 31.25
+      T8 29.95
+      V8
+      L44 4
+      V6.5
+      L20.5 9.1
+      V13.45
+      H44
+      V15.95
+      H20.5
+      V19.35
+      Q21.35 19.15 22.23 19.08
+      T24 19
+      Q30.25 19 34.95 22.85
+      T40.75 32.6
+      H44
+      L42.25 39.7
+      Q41.75 41.6 40.25 42.8
+      T36.8 44
+      H11.25
+      Z
+      M11.25 41
+      H36.8
+      Q37.7 41 38.4 40.42
+      T39.35 38.95
+      L40.15 35.6
+      H7.85
+      L8.65 38.95
+      Q8.85 39.85 9.58 40.42
+      T11.25 41
+      Z
+      M10.3 32.6
+      H14.7
+      Q15.7 29.8 18.25 28.07
+      T24 26.35
+      T29.75 28.08
+      T33.3 32.6
+      H37.7
+      Q36.65 28 32.83 25
+      T24 22
+      T15.18 25
+      T10.3 32.6
+      Z
+      M18.1 32.6
+      H29.9
+      Q29.05 31.15 27.48 30.25
+      T24 29.35
+      T20.53 30.25
+      T18.1 32.6
+      Z
+      M10.5 25.5
+      Q11.05 24.8 11.68 24.15
+      T13 22.95
+      V15.95
+      H10.5
+      V25.5
+      Z
+      M15.5 21.2
+      Q16.1 20.85 16.73 20.57
+      T18 20.05
+      V15.95
+      H15.5
+      V21.2
+      Z
+      M10.5 13.45
+      H13
+      V9.9
+      L10.5 10.2
+      V13.45
+      Z
+      M15.5 13.45
+      H18
+      V9.35
+      L15.5 9.65
+      V13.45
+      Z
+    "/>
+  </g>
+
+  <!-- Green plus badge in bottom right -->
+  <circle cx="384" cy="384" r="72" fill="#22c55e"/>
+  <!-- Plus sign -->
+  <rect x="348" y="372" width="72" height="24" rx="12" fill="white"/>
+  <rect x="372" y="348" width="24" height="72" rx="12" fill="white"/>
+</svg>
