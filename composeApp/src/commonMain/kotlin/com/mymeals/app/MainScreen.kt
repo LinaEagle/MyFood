@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.mymeals.app.model.Meal
 import com.mymeals.app.ui.formatDate
 import com.mymeals.app.ui.formatTimestamp
+import com.mymeals.app.ui.ImageCache
 import com.mymeals.app.ui.loadImageBitmap
 
 @Composable
@@ -165,7 +166,9 @@ private fun MealCard(
     onToggle: (String) -> Unit,
 ) {
     val bitmap: ImageBitmap? by produceState<ImageBitmap?>(null, meal.photoPath) {
-        value = loadImageBitmap(meal.photoPath)
+        value = ImageCache.get(meal.photoPath) ?: loadImageBitmap(meal.photoPath)?.also {
+            ImageCache.put(meal.photoPath, it)
+        }
     }
 
     Card(

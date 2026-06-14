@@ -11,6 +11,7 @@ import com.mymeals.app.data.MealRepository
 import com.mymeals.app.data.currentTimeMillis
 import com.mymeals.app.data.getAppStorageDir
 import com.mymeals.app.model.Meal
+import com.mymeals.app.ui.ImageCache
 import kotlin.random.Random
 
 private enum class Screen { MAIN, ADD_MEAL }
@@ -35,7 +36,10 @@ fun App(openCamera: Boolean = false) {
                 onAddClick = { screen = Screen.ADD_MEAL },
                 onDeleteMeals = { ids ->
                     val deleted = meals.filter { it.id in ids }
-                    deleted.forEach { repository.deletePhoto(it.photoPath) }
+                    deleted.forEach {
+                        repository.deletePhoto(it.photoPath)
+                        ImageCache.remove(it.photoPath)
+                    }
                     meals = meals.filter { it.id !in ids }
                     repository.saveMeals(meals)
                 },

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
+import platform.CoreGraphics.CGSizeMake
+import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSData
 import platform.UIKit.*
 import platform.darwin.NSObject
@@ -66,7 +68,8 @@ private class ImagePickerDelegate(
     ) {
         val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
         if (image != null) {
-            val data = UIImageJPEGRepresentation(image, 0.8)
+            val resized = resizeImage(image)
+            val data = UIImageJPEGRepresentation(resized, 0.8)
             if (data != null) {
                 val size = data.length.toInt()
                 val bytes = ByteArray(size)
@@ -83,5 +86,24 @@ private class ImagePickerDelegate(
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
         picker.dismissViewControllerAnimated(true, completion = null)
+    }
+}
+
+private const val MAX_DIMENSION = 1024.0
+
+private fun resizeImage(image: UIImage): UIImage {
+    val w = image.size.width
+    val h = image.size.height
+    if (w <= MAX_DIMENSION && h <= MAX_DIMENSION) return image
+
+    val (newW, newH) = if (w >= h) {
+        Pair(MAX_DIMENSION, h * MAX_DIMENSION / w)
+    } else {
+        Pair(w * MAX_DIMENSION / h, MAX_DIMENSION)
+    }
+
+    val renderer = UIGraphicsImageRenderer(CGSizeMake(newW, newH))
+    return renderer.image { _ ->
+        image.drawInRect(CGRectMake(0.0, 0.0, newW, newH))
     }
 }
