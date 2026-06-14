@@ -4,6 +4,7 @@
 - Никогда не удаляй .env
 - Перед коммитом — npm run lint
 - Не запускай gradle-команды без явной команды
+- пиши коммиты только на английском
 
 ## Restrictions
 - don't build .apk and .exe without explicit command
