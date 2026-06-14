@@ -1,6 +1,6 @@
 package com.mymeals.app
 
-import androidx.compose.material3.MaterialTheme
+import com.mymeals.app.ui.theme.MyFoodTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +28,7 @@ fun App(openCamera: Boolean = false) {
         if (consumeOpenCamera) consumeOpenCamera = false
     }
 
-    MaterialTheme {
+    MyFoodTheme {
         when (screen) {
             Screen.MAIN -> MainScreen(
                 meals = meals,

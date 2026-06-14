@@ -99,7 +99,7 @@ fun MainScreen(
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Удалить",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onError,
                     )
                 }
             }
