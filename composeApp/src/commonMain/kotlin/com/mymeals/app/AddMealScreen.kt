@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimeInput
+import com.mymeals.app.ui.AnalogTimePicker
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.window.Dialog
 import androidx.compose.material3.rememberDatePickerState
@@ -62,12 +63,13 @@ import com.mymeals.app.ui.icons.photo_camera
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMealScreen(
-    onSave: (photoBytes: ByteArray, name: String?, calories: Int?, createdAt: Long) -> Unit,
+    onSave: (photoBytes: ByteArray, name: String?, calories: Int?, weightGrams: Int?, createdAt: Long) -> Unit,
     onCancel: () -> Unit,
 ) {
     var photoBytes by remember { mutableStateOf<ByteArray?>(null) }
     var name by remember { mutableStateOf("") }
     var caloriesText by remember { mutableStateOf("") }
+    var weightText by remember { mutableStateOf("") }
 
     val now = remember { currentTimeMillis() }
     var selectedDateMillis by remember { mutableStateOf(now) }
@@ -136,7 +138,18 @@ fun AddMealScreen(
                     modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    TimeInput(state = timePickerState)
+                    Text(
+                        text = "${timePickerState.hour.toString().padStart(2, '0')}:${timePickerState.minute.toString().padStart(2, '0')}",
+                        style = MaterialTheme.typography.headlineLarge,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    AnalogTimePicker(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        hour = timePickerState.hour,
+                        minute = timePickerState.minute,
+                        onHourChange = { timePickerState.hour = it },
+                        onMinuteChange = { timePickerState.minute = it },
+                    )
                     Spacer(Modifier.height(24.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -220,6 +233,15 @@ fun AddMealScreen(
                     value = caloriesText,
                     onValueChange = { caloriesText = it.filter { c -> c.isDigit() } },
                     label = { Text("Калории (необязательно)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
+
+                OutlinedTextField(
+                    value = weightText,
+                    onValueChange = { weightText = it.filter { c -> c.isDigit() } },
+                    label = { Text("Вес (г, необязательно)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -317,6 +339,7 @@ fun AddMealScreen(
                     onClick = {
                         val photo = photoBytes ?: return@Button
                         val calValue = caloriesText.toIntOrNull()
+                        val weightValue = weightText.toIntOrNull()
 
                         val dateMillis = if (dateText.isNotBlank()) {
                             val parsed = parseDateInput(dateText)
@@ -343,7 +366,7 @@ fun AddMealScreen(
                         }
 
                         val finalMillis = setTimeOfDay(dateMillis, timePair.first, timePair.second)
-                        onSave(photo, name.ifBlank { null }, calValue, finalMillis)
+                        onSave(photo, name.ifBlank { null }, calValue, weightValue, finalMillis)
                     },
                     modifier = Modifier.weight(1f),
                     enabled = canSave,

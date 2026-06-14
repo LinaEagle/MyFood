@@ -194,14 +194,14 @@ private fun MealCard(
                     bitmap = bitmap!!,
                     contentDescription = meal.name ?: "Фото еды",
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(128.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop,
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(128.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -215,13 +215,22 @@ private fun MealCard(
                     .padding(start = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Text(
-                    text = meal.name ?: "Без названия",
-                    style = MaterialTheme.typography.titleMedium,
-                )
+                if (!meal.name.isNullOrBlank()) {
+                    Text(
+                        text = meal.name,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
                 if (meal.calories != null) {
                     Text(
                         text = "${meal.calories} ккал",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                if (meal.weightGrams != null) {
+                    Text(
+                        text = "${meal.weightGrams} г",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

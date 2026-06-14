@@ -8,5 +8,6 @@ data class Meal(
     val photoPath: String,
     val name: String? = null,
     val calories: Int? = null,
+    val weightGrams: Int? = null,
     val createdAt: Long,
 )
