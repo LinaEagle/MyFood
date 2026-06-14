@@ -21,14 +21,13 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,15 +47,12 @@ import com.mymeals.app.ui.formatDate
 import com.mymeals.app.ui.formatTimestamp
 import com.mymeals.app.ui.loadImageBitmap
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     meals: List<Meal>,
     onAddClick: () -> Unit,
     onDeleteMeals: (Set<String>) -> Unit,
-    onRefresh: () -> Unit,
 ) {
-    var isRefreshing by remember { mutableStateOf(false) }
     var selectedIds by remember { mutableStateOf(setOf<String>()) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -109,48 +105,39 @@ fun MainScreen(
             }
         }
     ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                isRefreshing = true
-                onRefresh()
-                isRefreshing = false
-            },
-            modifier = Modifier.fillMaxSize().padding(padding),
-        ) {
-            if (meals.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Нет записей",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    grouped.forEach { (date, mealsOfDate) ->
-                        item(key = "date_$date") {
-                            DateHeader(date)
-                        }
-                        items(mealsOfDate, key = { it.id }) { meal ->
-                            MealCard(
-                                meal = meal,
-                                isSelected = meal.id in selectedIds,
-                                onToggle = { id ->
-                                    selectedIds = if (id in selectedIds) {
-                                        selectedIds - id
-                                    } else {
-                                        selectedIds + id
-                                    }
-                                },
-                            )
-                        }
+        if (meals.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "Нет записей",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                grouped.forEach { (date, mealsOfDate) ->
+                    item(key = "date_$date") {
+                        DateHeader(date)
+                    }
+                    items(mealsOfDate, key = { it.id }) { meal ->
+                        MealCard(
+                            meal = meal,
+                            isSelected = meal.id in selectedIds,
+                            onToggle = { id ->
+                                selectedIds = if (id in selectedIds) {
+                                    selectedIds - id
+                                } else {
+                                    selectedIds + id
+                                }
+                            },
+                        )
                     }
                 }
             }

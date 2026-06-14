@@ -33,13 +33,10 @@ fun App() {
                     meals = meals.filter { it.id !in ids }
                     repository.saveMeals(meals)
                 },
-                onRefresh = {
-                    meals = repository.loadMeals()
-                },
             )
 
             Screen.ADD_MEAL -> AddMealScreen(
-                onSave = { photoBytes, name, calories ->
+                onSave = { photoBytes, name, calories, createdAt ->
                     val id = "${currentTimeMillis()}_${Random.nextInt(10000)}"
                     val photoPath = repository.savePhoto(id, photoBytes)
                     val meal = Meal(
@@ -47,7 +44,7 @@ fun App() {
                         photoPath = photoPath,
                         name = name,
                         calories = calories,
-                        createdAt = currentTimeMillis(),
+                        createdAt = createdAt,
                     )
                     meals = (listOf(meal) + meals).sortedByDescending { it.createdAt }
                     repository.saveMeals(meals)

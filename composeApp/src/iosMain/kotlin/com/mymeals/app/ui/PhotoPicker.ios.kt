@@ -13,12 +13,46 @@ actual fun rememberPhotoPickerLauncher(onPhotoPicked: (ByteArray) -> Unit): () -
     val delegate = remember { ImagePickerDelegate(onPhotoPicked) }
 
     return {
-        val picker = UIImagePickerController()
-        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary
-        picker.delegate = delegate
-
         val rootVC = UIApplication.sharedApplication.keyWindow?.rootViewController
-        rootVC?.presentViewController(picker, animated = true, completion = null)
+        if (rootVC == null) return@remember
+
+        val alert = UIAlertController.alertControllerWithTitle(
+            "Добавить фото",
+            message = null,
+            preferredStyle = UIAlertControllerStyleActionSheet,
+        )
+
+        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceTypeCamera)) {
+            alert.addAction(
+                UIAlertAction.actionWithTitle(
+                    "Сделать фото",
+                    style = UIAlertActionStyleDefault,
+                ) {
+                    val picker = UIImagePickerController()
+                    picker.sourceType = UIImagePickerControllerSourceTypeCamera
+                    picker.delegate = delegate
+                    rootVC.presentViewController(picker, animated = true, completion = null)
+                }
+            )
+        }
+
+        alert.addAction(
+            UIAlertAction.actionWithTitle(
+                "Выбрать из галереи",
+                style = UIAlertActionStyleDefault,
+            ) {
+                val picker = UIImagePickerController()
+                picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary
+                picker.delegate = delegate
+                rootVC.presentViewController(picker, animated = true, completion = null)
+            }
+        )
+
+        alert.addAction(
+            UIAlertAction.actionWithTitle("Отмена", style = UIAlertActionStyleCancel, handler = null)
+        )
+
+        rootVC.presentViewController(alert, animated = true, completion = null)
     }
 }
 
