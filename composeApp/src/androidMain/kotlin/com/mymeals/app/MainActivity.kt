@@ -11,8 +11,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         appContext = applicationContext
+        val openCamera = intent.getBooleanExtra("open_camera", false)
         setContent {
-            App()
+            App(openCamera = openCamera)
         }
     }
 }

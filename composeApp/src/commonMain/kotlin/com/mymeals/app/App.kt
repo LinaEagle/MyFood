@@ -2,6 +2,7 @@ package com.mymeals.app
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,12 +16,17 @@ import kotlin.random.Random
 private enum class Screen { MAIN, ADD_MEAL }
 
 @Composable
-fun App() {
+fun App(openCamera: Boolean = false) {
     val storageDir = remember { getAppStorageDir() }
     val repository = remember { MealRepository(storageDir) }
 
     var meals by remember { mutableStateOf(repository.loadMeals()) }
-    var screen by remember { mutableStateOf(Screen.MAIN) }
+    var consumeOpenCamera by remember { mutableStateOf(openCamera) }
+    var screen by remember { mutableStateOf(if (consumeOpenCamera) Screen.ADD_MEAL else Screen.MAIN) }
+
+    LaunchedEffect(consumeOpenCamera) {
+        if (consumeOpenCamera) consumeOpenCamera = false
+    }
 
     MaterialTheme {
         when (screen) {
@@ -36,6 +42,7 @@ fun App() {
             )
 
             Screen.ADD_MEAL -> AddMealScreen(
+                autoOpenCamera = consumeOpenCamera,
                 onSave = { photoBytes, name, calories, weightGrams, createdAt ->
                     val id = "${currentTimeMillis()}_${Random.nextInt(10000)}"
                     val photoPath = repository.savePhoto(id, photoBytes)

@@ -1,4 +1,4 @@
-package com.mymeals.app
+package com.mymeals.app.ui.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType

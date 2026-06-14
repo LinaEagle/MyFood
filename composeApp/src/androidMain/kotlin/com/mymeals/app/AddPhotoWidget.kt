@@ -25,12 +25,14 @@ class AddPhotoWidget : GlanceAppWidget() {
                 modifier = GlanceModifier
                     .fillMaxSize()
                     .clickable(onClick = actionStartActivity(
-                        Intent(context, MainActivity::class.java)
+                        Intent(context, MainActivity::class.java).apply {
+                            putExtra("open_camera", true)
+                        }
                     )),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    provider = ImageProvider(com.mymeals.app.R.drawable.ic_add_plus),
+                    provider = ImageProvider(com.mymeals.app.R.drawable.soba_icon_plus),
                     contentDescription = "Add photo",
                     modifier = GlanceModifier
                         .padding(12.dp)

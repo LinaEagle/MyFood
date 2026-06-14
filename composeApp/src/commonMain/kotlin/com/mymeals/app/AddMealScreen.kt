@@ -38,6 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,6 +64,7 @@ import com.mymeals.app.ui.icons.photo_camera
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMealScreen(
+    autoOpenCamera: Boolean = false,
     onSave: (photoBytes: ByteArray, name: String?, calories: Int?, weightGrams: Int?, createdAt: Long) -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -82,6 +84,10 @@ fun AddMealScreen(
 
     val launchPicker = rememberPhotoPickerLauncher { bytes ->
         photoBytes = bytes
+    }
+
+    LaunchedEffect(autoOpenCamera) {
+        if (autoOpenCamera) launchPicker()
     }
 
     val canSave = photoBytes != null
