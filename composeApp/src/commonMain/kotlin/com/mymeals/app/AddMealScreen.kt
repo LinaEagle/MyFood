@@ -1,9 +1,7 @@
 package com.mymeals.app
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,10 +16,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -47,10 +49,12 @@ import androidx.compose.ui.unit.dp
 import com.mymeals.app.data.currentTimeMillis
 import com.mymeals.app.ui.BackHandler
 import com.mymeals.app.ui.decodeImageBitmap
-import com.mymeals.app.ui.formatDate
-import com.mymeals.app.ui.formatTimestamp
+import com.mymeals.app.ui.formatDateInput
+import com.mymeals.app.ui.formatTimeInput
 import com.mymeals.app.ui.getHour
 import com.mymeals.app.ui.getMinute
+import com.mymeals.app.ui.parseDateInput
+import com.mymeals.app.ui.parseTimeInput
 import com.mymeals.app.ui.rememberPhotoPickerLauncher
 import com.mymeals.app.ui.setTimeOfDay
 import com.mymeals.app.ui.icons.photo_camera
@@ -67,6 +71,10 @@ fun AddMealScreen(
 
     val now = remember { currentTimeMillis() }
     var selectedDateMillis by remember { mutableStateOf(now) }
+    var dateText by remember { mutableStateOf(formatDateInput(now)) }
+    var timeText by remember { mutableStateOf(formatTimeInput(now)) }
+    var dateError by remember { mutableStateOf(false) }
+    var timeError by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
@@ -92,6 +100,9 @@ fun AddMealScreen(
                             getHour(selectedDateMillis),
                             getMinute(selectedDateMillis)
                         )
+                        dateText = formatDateInput(selectedDateMillis)
+                        timeText = formatTimeInput(selectedDateMillis)
+                        dateError = false
                     }
                     showDatePicker = false
                 }) {
@@ -140,6 +151,8 @@ fun AddMealScreen(
                                 timePickerState.hour,
                                 timePickerState.minute
                             )
+                            timeText = formatTimeInput(selectedDateMillis)
+                            timeError = false
                             showTimePicker = false
                         }) {
                             Text("OK")
@@ -212,38 +225,79 @@ fun AddMealScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true }
-                ) {
-                    OutlinedTextField(
-                        value = formatDate(selectedDateMillis),
-                        onValueChange = {},
-                        label = { Text("Дата") },
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        singleLine = true,
-                    )
-                }
+                OutlinedTextField(
+                    value = dateText,
+                    onValueChange = { newText ->
+                        val filtered = newText.filter { it.isDigit() || it == '.' }
+                        if (filtered.length <= 10) {
+                            dateText = filtered
+                            val parsed = parseDateInput(filtered)
+                            if (parsed != null) {
+                                selectedDateMillis = setTimeOfDay(
+                                    parsed,
+                                    getHour(selectedDateMillis),
+                                    getMinute(selectedDateMillis)
+                                )
+                                dateError = false
+                            } else if (filtered.length == 10) {
+                                dateError = true
+                            } else {
+                                dateError = false
+                            }
+                        }
+                    },
+                    label = { Text("Дата (ДД.ММ.ГГГГ)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = dateError,
+                    supportingText = if (dateError) {
+                        { Text("Неверный формат даты") }
+                    } else {
+                        null
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { showDatePicker = true }) {
+                            Icon(Icons.Default.DateRange, contentDescription = "Выбрать дату")
+                        }
+                    },
+                )
 
-                val timeText = remember(selectedDateMillis) {
-                    formatTimestamp(selectedDateMillis).substringAfter(", ")
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showTimePicker = true }
-                ) {
-                    OutlinedTextField(
-                        value = timeText,
-                        onValueChange = {},
-                        label = { Text("Время") },
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        singleLine = true,
-                    )
-                }
+                OutlinedTextField(
+                    value = timeText,
+                    onValueChange = { newText ->
+                        val filtered = newText.filter { it.isDigit() || it == ':' }
+                        if (filtered.length <= 5) {
+                            timeText = filtered
+                            val parsed = parseTimeInput(filtered)
+                            if (parsed != null) {
+                                selectedDateMillis = setTimeOfDay(
+                                    selectedDateMillis,
+                                    parsed.first,
+                                    parsed.second
+                                )
+                                timeError = false
+                            } else if (filtered.length == 5) {
+                                timeError = true
+                            } else {
+                                timeError = false
+                            }
+                        }
+                    },
+                    label = { Text("Время (ЧЧ:ММ)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = timeError,
+                    supportingText = if (timeError) {
+                        { Text("Неверный формат времени") }
+                    } else {
+                        null
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { showTimePicker = true }) {
+                            Icon(Icons.Default.Schedule, contentDescription = "Выбрать время")
+                        }
+                    },
+                )
             }
 
             Spacer(Modifier.height(16.dp))
@@ -263,7 +317,33 @@ fun AddMealScreen(
                     onClick = {
                         val photo = photoBytes ?: return@Button
                         val calValue = caloriesText.toIntOrNull()
-                        onSave(photo, name.ifBlank { null }, calValue, selectedDateMillis)
+
+                        val dateMillis = if (dateText.isNotBlank()) {
+                            val parsed = parseDateInput(dateText)
+                            if (parsed == null) {
+                                dateError = true
+                                return@Button
+                            }
+                            dateError = false
+                            parsed
+                        } else {
+                            currentTimeMillis()
+                        }
+
+                        val timePair = if (timeText.isNotBlank()) {
+                            val parsed = parseTimeInput(timeText)
+                            if (parsed == null) {
+                                timeError = true
+                                return@Button
+                            }
+                            timeError = false
+                            parsed
+                        } else {
+                            Pair(getHour(now), getMinute(now))
+                        }
+
+                        val finalMillis = setTimeOfDay(dateMillis, timePair.first, timePair.second)
+                        onSave(photo, name.ifBlank { null }, calValue, finalMillis)
                     },
                     modifier = Modifier.weight(1f),
                     enabled = canSave,

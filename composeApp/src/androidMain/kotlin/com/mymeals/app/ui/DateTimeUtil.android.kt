@@ -1,6 +1,9 @@
 package com.mymeals.app.ui
 
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 actual fun setTimeOfDay(dateMillis: Long, hour: Int, minute: Int): Long {
     val cal = Calendar.getInstance()
@@ -22,4 +25,15 @@ actual fun getMinute(timestamp: Long): Int {
     val cal = Calendar.getInstance()
     cal.timeInMillis = timestamp
     return cal.get(Calendar.MINUTE)
+}
+
+actual fun formatDateInput(timestamp: Long): String {
+    val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    return sdf.format(Date(timestamp))
+}
+
+actual fun parseDateInput(dateStr: String): Long? {
+    val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    sdf.isLenient = false
+    return sdf.parse(dateStr)?.time
 }

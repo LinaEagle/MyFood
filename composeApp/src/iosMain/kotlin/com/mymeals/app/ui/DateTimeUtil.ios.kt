@@ -40,3 +40,17 @@ actual fun getMinute(timestamp: Long): Int {
     )
     return components.minute?.toInt() ?: 0
 }
+
+actual fun formatDateInput(timestamp: Long): String {
+    val formatter = NSDateFormatter()
+    formatter.dateFormat = "dd.MM.yyyy"
+    val date = NSDate(timeIntervalSince1970 = timestamp / 1000.0)
+    return formatter.stringFromDate(date)
+}
+
+actual fun parseDateInput(dateStr: String): Long? {
+    val formatter = NSDateFormatter()
+    formatter.dateFormat = "dd.MM.yyyy"
+    val date = formatter.dateFromString(dateStr)
+    return date?.let { (it.timeIntervalSince1970 * 1000).toLong() }
+}
